@@ -1,0 +1,133 @@
+version: '3.4'
+services:
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    container_name: nginx
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - '/var/run/docker.sock:/tmp/docker.sock:ro'
+      - './shared/nginx/vhost.d:/etc/nginx/vhost.d'
+      - './shared/nginx/certs:/etc/nginx/certs:ro'
+    networks:
+      proxy: null
+      identityserverui:
+        aliases:
+          - auth-sts.etsprop.ru
+          - auth-admin.etsprop.ru
+          - auth-api.etsprop.ru
+    restart: always
+  is4net6.admin:
+    image: '${DOCKER_REGISTRY-}skoruba-identityserver4-admin'
+    build:
+      context: .
+      dockerfile: src/IS4net6.Admin/Dockerfile
+    container_name: skoruba-identityserver4-admin
+    environment:
+      - VIRTUAL_HOST=auth-admin.etsprop.ru
+      - 'ConnectionStrings__ConfigurationDbConnection=Server=db;Database=IdentityServer4Admin;User Id=${DB_USER};Password=${DB_PASSWORD}'
+      - 'ConnectionStrings__PersistedGrantDbConnection=Server=db;Database=IdentityServer4Admin;User Id=${DB_USER};Password=${DB_PASSWORD}'
+      - 'ConnectionStrings__IdentityDbConnection=Server=db;Database=IdentityServer4Admin;User Id=${DB_USER};Password=${DB_PASSWORD}'
+      - 'ConnectionStrings__AdminLogDbConnection=Server=db;Database=IdentityServer4Admin;User Id=${DB_USER};Password=${DB_PASSWORD}'
+      - 'ConnectionStrings__AdminAuditLogDbConnection=Server=db;Database=IdentityServer4Admin;User Id=${DB_USER};Password=${DB_PASSWORD}'
+      - 'ConnectionStrings__DataProtectionDbConnection=Server=db;Database=IdentityServer4Admin;User Id=${DB_USER};Password=${DB_PASSWORD}'
+      - 'AdminConfiguration__IdentityAdminBaseUrl=https://auth-admin.etsprop.ru'
+      - 'AdminConfiguration__IdentityAdminRedirectUri=https://auth-admin.etsprop.ru/signin-oidc'
+      - 'AdminConfiguration__IdentityServerBaseUrl=https://auth-sts.etsprop.ru'
+      - AdminConfiguration__RequireHttpsMetadata=false
+      - 'IdentityServerData__Clients__0__ClientUri=https://auth-admin.etsprop.ru'
+      - 'IdentityServerData__Clients__0__RedirectUris__0=https://auth-admin.etsprop.ru/signin-oidc'
+      - 'IdentityServerData__Clients__0__FrontChannelLogoutUri=https://auth-admin.etsprop.ru/signin-oidc'
+      - 'IdentityServerData__Clients__0__PostLogoutRedirectUris__0=https://auth-admin.etsprop.ru/signout-callback-oidc'
+      - 'IdentityServerData__Clients__0__AllowedCorsOrigins__0=https://auth-admin.etsprop.ru'
+      - 'IdentityServerData__Clients__1__RedirectUris__0=https://auth-api.etsprop.ru/swagger/oauth2-redirect.html'
+      - 'Serilog__WriteTo__1__Args__connectionString=Server=db;Database=IdentityServer4Admin;User Id=${DB_USER};Password=${DB_PASSWORD}'
+      - DockerConfiguration__UpdateCaCertificate=true
+      - ASPNETCORE_ENVIRONMENT=Development
+    command: dotnet IS4net6.Admin.dll /seed
+    depends_on:
+      - db
+      - is4net6.sts.identity
+    volumes:
+      - './shared/serilog.json:/app/serilog.json'
+      - './shared/identitydata.json:/app/identitydata.json'
+      - './shared/identityserverdata.json:/app/identityserverdata.json'
+      - './shared/nginx/certs/cacerts.crt:/usr/local/share/ca-certificates/cacerts.crt'
+    networks:
+      identityserverui: null
+  is4net6.admin.api:
+    image: '${DOCKER_REGISTRY-}skoruba-identityserver4-admin-api'
+    build:
+      context: .
+      dockerfile: src/IS4net6.Admin.Api/Dockerfile
+    container_name: skoruba-identityserver4-admin-api
+    environment:
+      - VIRTUAL_HOST=auth-api.etsprop.ru
+      - AdminApiConfiguration__RequireHttpsMetadata=false
+      - 'AdminApiConfiguration__ApiBaseUrl=https://auth-api.etsprop.ru'
+      - 'AdminApiConfiguration__IdentityServerBaseUrl=https://auth-sts.etsprop.ru'
+      - 'ConnectionStrings__ConfigurationDbConnection=Server=db;Database=IdentityServer4Admin;User Id=${DB_USER};Password=${DB_PASSWORD}'
+      - 'ConnectionStrings__PersistedGrantDbConnection=Server=db;Database=IdentityServer4Admin;User Id=${DB_USER};Password=${DB_PASSWORD}'
+      - 'ConnectionStrings__IdentityDbConnection=Server=db;Database=IdentityServer4Admin;User Id=${DB_USER};Password=${DB_PASSWORD}'
+      - 'ConnectionStrings__AdminLogDbConnection=Server=db;Database=IdentityServer4Admin;User Id=${DB_USER};Password=${DB_PASSWORD}'
+      - 'ConnectionStrings__AdminAuditLogDbConnection=Server=db;Database=IdentityServer4Admin;User Id=${DB_USER};Password=${DB_PASSWORD}'
+      - 'ConnectionStrings__DataProtectionDbConnection=Server=db;Database=IdentityServer4Admin;User Id=${DB_USER};Password=${DB_PASSWORD}'
+      - DockerConfiguration__UpdateCaCertificate=true
+      - ASPNETCORE_ENVIRONMENT=Development
+    volumes:
+      - './shared/serilog.json:/app/serilog.json'
+      - './shared/nginx/certs/cacerts.crt:/usr/local/share/ca-certificates/cacerts.crt'
+    networks:
+      identityserverui: null
+  is4net6.sts.identity:
+    image: '${DOCKER_REGISTRY-}skoruba-identityserver4-sts-identity'
+    build:
+      context: .
+      dockerfile: src/IS4net6.STS.Identity/Dockerfile
+    container_name: skoruba-identityserver4-sts-identity
+    environment:
+      - VIRTUAL_HOST=auth-sts.etsprop.ru
+      - 'ConnectionStrings__ConfigurationDbConnection=Server=db;Database=IdentityServer4Admin;User Id=${DB_USER};Password=${DB_PASSWORD}'
+      - 'ConnectionStrings__PersistedGrantDbConnection=Server=db;Database=IdentityServer4Admin;User Id=${DB_USER};Password=${DB_PASSWORD}'
+      - 'ConnectionStrings__IdentityDbConnection=Server=db;Database=IdentityServer4Admin;User Id=${DB_USER};Password=${DB_PASSWORD}'
+      - 'ConnectionStrings__DataProtectionDbConnection=Server=db;Database=IdentityServer4Admin;User Id=${DB_USER};Password=${DB_PASSWORD}'
+      - 'AdminConfiguration__IdentityAdminBaseUrl=https://auth-admin.etsprop.ru'
+      - 'IdentityServerOptions__IssuerUri=https://auth-sts.etsprop.ru'
+      - IdentityServerOptions__Events__RaiseErrorEvents=true
+      - IdentityServerOptions__Events__RaiseInformationEvents=true
+      - IdentityServerOptions__Events__RaiseFailureEvents=true
+      - IdentityServerOptions__Events__RaiseSuccessEvents=true
+      - DockerConfiguration__UpdateCaCertificate=true
+      - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - db
+    volumes:
+      - './shared/serilog.json:/app/serilog.json'
+      - './shared/nginx/certs/cacerts.crt:/usr/local/share/ca-certificates/cacerts.crt'
+    networks:
+      identityserverui:
+        aliases:
+          - auth-sts.etsprop.ru
+  db:
+    image: 'postgres:14.2-alpine'
+    ports:
+      - "5432:5432"
+    container_name: skoruba-identityserver4-db
+    environment:
+      POSTGRES_DB: "IdentityServer4Admin"
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      PGDATA: "/var/lib/postgresql/data/pgdata"
+    volumes:
+      - 'dbdata:/var/lib/postgresql/data'
+    networks:
+      identityserverui: null
+volumes:
+  dbdata:
+    driver: local
+networks:
+  proxy:
+    driver: bridge
+  identityserverui:
+    driver: bridge
