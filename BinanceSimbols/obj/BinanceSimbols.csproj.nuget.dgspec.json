@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "D:\\Programming\\propSoftSrv\\Microservices\\CommonAPI.net6\\BinanceSimbols\\BinanceSimbols.csproj": {}
+    "D:\\Programming\\CommonAPI\\BinanceSimbols\\BinanceSimbols.csproj": {}
   },
   "projects": {
-    "D:\\Programming\\propSoftSrv\\Microservices\\CommonAPI.net6\\BinanceSimbols\\BinanceSimbols.csproj": {
+    "D:\\Programming\\CommonAPI\\BinanceSimbols\\BinanceSimbols.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "D:\\Programming\\propSoftSrv\\Microservices\\CommonAPI.net6\\BinanceSimbols\\BinanceSimbols.csproj",
+        "projectUniqueName": "D:\\Programming\\CommonAPI\\BinanceSimbols\\BinanceSimbols.csproj",
         "projectName": "BinanceSimbols",
-        "projectPath": "D:\\Programming\\propSoftSrv\\Microservices\\CommonAPI.net6\\BinanceSimbols\\BinanceSimbols.csproj",
+        "projectPath": "D:\\Programming\\CommonAPI\\BinanceSimbols\\BinanceSimbols.csproj",
         "packagesPath": "C:\\Users\\Kostik\\.nuget\\packages\\",
-        "outputPath": "D:\\Programming\\propSoftSrv\\Microservices\\CommonAPI.net6\\BinanceSimbols\\obj\\",
+        "outputPath": "D:\\Programming\\CommonAPI\\BinanceSimbols\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages",

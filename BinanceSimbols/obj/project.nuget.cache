@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "+8aMuqBYNhYhArXP8OVrATXpDw1hg7X3gdldnZMVMW+n48zEgwZ6oJx6sUfgKnowoKuq5aOEeHW43zVtNSiGMg==",
+  "dgSpecHash": "kDbWw8Y9yoQ7He5rpEjHASx1KMtg9JXmBKe6/bHEEo9YVEq/dKxMJ2EB4Ad8MAHOFXT+JAz2pYFDVaFBvi7vNA==",
   "success": true,
-  "projectFilePath": "D:\\Programming\\propSoftSrv\\Microservices\\CommonAPI.net6\\BinanceSimbols\\BinanceSimbols.csproj",
+  "projectFilePath": "D:\\Programming\\CommonAPI\\BinanceSimbols\\BinanceSimbols.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\Kostik\\.nuget\\packages\\microsoft.extensions.apidescription.server\\3.0.0\\microsoft.extensions.apidescription.server.3.0.0.nupkg.sha512",
     "C:\\Users\\Kostik\\.nuget\\packages\\microsoft.openapi\\1.2.3\\microsoft.openapi.1.2.3.nupkg.sha512",

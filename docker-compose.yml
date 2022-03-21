@@ -15,7 +15,7 @@ services:
         aliases:
           - api.etsprop.ru         
     restart: always
-  binance.api:
+  common.api:
     image: 'etstrading/commonapi'
     build:
       context: .
@@ -27,11 +27,9 @@ services:
     volumes:    
       - './shared/nginx/certs/cacerts.crt:/usr/local/share/ca-certificates/cacerts.crt'
     networks:
-      commonnet: null
-
-
+      commonnet: null      
 networks:
   proxy:
     driver: bridge
-    commonnet:
+  commonnet:
     driver: bridge
