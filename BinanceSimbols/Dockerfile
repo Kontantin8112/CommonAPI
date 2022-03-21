@@ -9,7 +9,7 @@ FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src
 COPY ["BinanceSimbols/BinanceSimbols.csproj", "."]
 RUN dotnet restore "./BinanceSimbols.csproj"
-COPY . .
+COPY BinanceSimbols .
 WORKDIR "/src/."
 RUN dotnet build "BinanceSimbols.csproj" -c Release -o /app/build
 
